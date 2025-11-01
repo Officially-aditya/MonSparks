@@ -305,6 +305,92 @@ async function main() {
       gasReward: ethers.parseEther("0.01"),
       requiredAction: 2,
     },
+
+    // 🎮 Mission-Based Interactive Quests
+    {
+      name: "🧩 Transaction Flow Puzzle",
+      description: "Complete the blockchain transaction flow puzzle mini-game",
+      xpReward: 20,
+      gasReward: ethers.parseEther("0.01"),
+      requiredAction: 3,
+    },
+    {
+      name: "🎯 Blockchain Trivia Master",
+      description: "Score 80% or higher on the blockchain trivia challenge",
+      xpReward: 30,
+      gasReward: ethers.parseEther("0.015"),
+      requiredAction: 3,
+    },
+    {
+      name: "🧠 Memory Match Champion",
+      description: "Complete the crypto terms memory game in under 15 moves",
+      xpReward: 15,
+      gasReward: ethers.parseEther("0.008"),
+      requiredAction: 3,
+    },
+    {
+      name: "📚 Monad Architecture Study",
+      description: "Complete the Monad architecture documentation quiz",
+      xpReward: 40,
+      gasReward: ethers.parseEther("0.02"),
+      requiredAction: 1,
+    },
+    {
+      name: "📖 x402 Protocol Expert",
+      description: "Master the x402 protocol through interactive learning",
+      xpReward: 25,
+      gasReward: ethers.parseEther("0.012"),
+      requiredAction: 1,
+    },
+    {
+      name: "🔍 Monad Deep Dive",
+      description: "Complete comprehensive Monad vs Ethereum comparison study",
+      xpReward: 50,
+      gasReward: ethers.parseEther("0.025"),
+      requiredAction: 1,
+    },
+    {
+      name: "⚡ Gas Optimization Quiz",
+      description: "Answer quick questions about blockchain gas optimization",
+      xpReward: 10,
+      gasReward: ethers.parseEther("0.005"),
+      requiredAction: 3,
+    },
+    {
+      name: "🎮 Smart Contract Game",
+      description: "Learn smart contract basics through interactive puzzle game",
+      xpReward: 35,
+      gasReward: ethers.parseEther("0.018"),
+      requiredAction: 3,
+    },
+    {
+      name: "🚀 Network Explorer Mission",
+      description: "Explore Monad's unique features through guided interactive tour",
+      xpReward: 20,
+      gasReward: ethers.parseEther("0.01"),
+      requiredAction: 1,
+    },
+    {
+      name: "💻 Code Challenge: Token Transfer",
+      description: "Write and understand a simple token transfer function",
+      xpReward: 60,
+      gasReward: ethers.parseEther("0.03"),
+      requiredAction: 3,
+    },
+    {
+      name: "🏆 Consensus Mechanisms Master",
+      description: "Master blockchain consensus through comprehensive quiz",
+      xpReward: 45,
+      gasReward: ethers.parseEther("0.022"),
+      requiredAction: 1,
+    },
+    {
+      name: "🎯 DeFi Protocols Puzzle",
+      description: "Solve advanced puzzles about DeFi protocols and liquidity",
+      xpReward: 40,
+      gasReward: ethers.parseEther("0.02"),
+      requiredAction: 3,
+    },
   ];
 
   console.log(`Creating ${quests.length} quests...\n`);

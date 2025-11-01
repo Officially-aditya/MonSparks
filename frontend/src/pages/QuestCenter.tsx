@@ -18,6 +18,7 @@ import { useWeb3 } from "../context/Web3Context";
 import { questsApi } from "../lib/api";
 import { Quest } from "../types";
 import { formatNumber } from "../lib/utils";
+import missions from "../data/missions";
 
 // Quest categories
 const CATEGORIES = [
@@ -45,6 +46,37 @@ const QuestCenter: React.FC = () => {
     loadQuests();
   }, [account]);
 
+  // Listen for local mission completions and update merged local quests (mapped with id offset 10000)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      try {
+        const detail = (e as CustomEvent)?.detail;
+        const missionId = detail?.missionId;
+        if (typeof missionId === "number") {
+          const questId = 10000 + missionId;
+          setQuests((prev) =>
+            prev.map((q) =>
+              q.id === questId
+                ? {
+                    ...q,
+                    completed: true,
+                    completionCount: (
+                      parseInt(q.completionCount || "0", 10) + 1
+                    ).toString(),
+                  }
+                : q
+            )
+          );
+        }
+      } catch (err) {
+        // ignore
+      }
+    };
+
+    window.addEventListener("mission:completed", handler as EventListener);
+    return () => window.removeEventListener("mission:completed", handler as EventListener);
+  }, []);
+
   useEffect(() => {
     filterQuests();
   }, [quests, selectedCategory, searchTerm, showCompleted]);
@@ -54,7 +86,21 @@ const QuestCenter: React.FC = () => {
     setLoading(true);
     try {
       const data = await questsApi.getAll(account ?? undefined);
-      setQuests(data.quests);
+      const serverQuests = data?.quests || [];
+
+      // Map local missions (mini-games) into Quest shape and merge
+      const localQuests: Quest[] = missions.map((m) => ({
+        id: 10000 + m.id,
+        name: m.title,
+        description: m.description,
+        xpReward: String(m.xpReward),
+        gasReward: "0",
+        isActive: true,
+        completionCount: "0",
+        completed: m.completed,
+      }));
+
+      setQuests([...serverQuests, ...localQuests]);
     } catch (error) {
       console.error("Error loading quests:", error);
     } finally {

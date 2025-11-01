@@ -9,6 +9,7 @@ import {
   Wallet,
   LogOut,
   Archive,
+  Target,
 } from "lucide-react";
 import { useWeb3 } from "../context/Web3Context";
 import { shortenAddress } from "../lib/utils";
@@ -23,7 +24,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { to: "/", label: "Dashboard", icon: Zap },
     { to: "/quests", label: "Quests", icon: Trophy },
-  { to: "/bridge", label: "Bridge", icon: Archive },
+    { to: "/missions", label: "Missions", icon: Target },
+    { to: "/bridge", label: "Bridge", icon: Archive },
     { to: "/activity", label: "Activity", icon: Activity },
   ];
 

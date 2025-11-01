@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import QuestCenter from "./pages/QuestCenter";
 import BridgePanel from "./pages/BridgePanel";
 import ActivityFeed from "./pages/ActivityFeed";
+import Missions from "./pages/Missions";
 
 const App: React.FC = () => {
   return (
@@ -15,6 +16,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/quests" element={<QuestCenter />} />
+            <Route path="/missions" element={<Missions />} />
             <Route path="/bridge" element={<BridgePanel />} />
             <Route path="/activity" element={<ActivityFeed />} />
           </Routes>

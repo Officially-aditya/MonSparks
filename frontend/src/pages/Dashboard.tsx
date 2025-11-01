@@ -19,6 +19,64 @@ const Dashboard: React.FC = () => {
     }
   }, [account]);
 
+  // Listen for mission completion events from the Missions page (local demo)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      // optimistic UI update: increment totalXP and completedQuests locally
+      try {
+        const detail = (e as CustomEvent)?.detail;
+        const xp = typeof detail?.xp === "number" ? detail.xp : parseInt(detail?.xp || "0");
+
+        if (xp && userProgress) {
+          setUserProgress((prev) => {
+            if (!prev) return prev;
+            const newTotal = (parseInt(prev.totalXP) + xp).toString();
+            const newCompleted = (
+              parseInt(prev.completedQuests || "0") + 1
+            ).toString();
+            return { ...prev, totalXP: newTotal, completedQuests: newCompleted } as typeof prev;
+          });
+        }
+      } catch (err) {
+        // ignore parsing errors
+      }
+
+      // still attempt to refresh authoritative data from server
+      if (account) loadDashboardData();
+    };
+
+    // Also process any persisted local completions when an event fires
+    const LOCAL_KEY = "monspark.completedMissions";
+    const processLocalCompletions = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+        if (Array.isArray(stored) && stored.length > 0) {
+          const xpSum = stored.reduce((s: number, it: any) => s + (typeof it.xp === "number" ? it.xp : parseInt(it.xp || "0")), 0);
+          const count = stored.length;
+          setUserProgress((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              totalXP: (parseInt(prev.totalXP) + xpSum).toString(),
+              completedQuests: (parseInt(prev.completedQuests || "0") + count).toString(),
+            } as typeof prev;
+          });
+          localStorage.removeItem(LOCAL_KEY);
+        }
+      } catch (err) {
+        // ignore
+      }
+    };
+
+    const wrappedHandler = (e: Event) => {
+      handler(e);
+      processLocalCompletions();
+    };
+
+    window.addEventListener("mission:completed", wrappedHandler as EventListener);
+    return () => window.removeEventListener("mission:completed", wrappedHandler as EventListener);
+  }, [account]);
+
   const loadDashboardData = async () => {
     if (!account) return;
 
@@ -31,6 +89,27 @@ const Dashboard: React.FC = () => {
       ]);
 
       setUserProgress(progressData.progress);
+      // After loading authoritative server data, merge any local completions stored while offline
+      try {
+        const LOCAL_KEY = "monspark.completedMissions";
+        const stored = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+        if (Array.isArray(stored) && stored.length > 0) {
+          const xpSum = stored.reduce((s: number, it: any) => s + (typeof it.xp === "number" ? it.xp : parseInt(it.xp || "0")), 0);
+          const count = stored.length;
+          setUserProgress((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              totalXP: (parseInt(prev.totalXP) + xpSum).toString(),
+              completedQuests: (parseInt(prev.completedQuests || "0") + count).toString(),
+            } as typeof prev;
+          });
+          // clear stored completions once applied
+          localStorage.removeItem(LOCAL_KEY);
+        }
+      } catch (err) {
+        // ignore
+      }
       setGasEligibility(eligibilityData.eligibleAmount);
       setPoolBalance(poolData.poolBalance);
     } catch (error) {

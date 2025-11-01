@@ -2,7 +2,15 @@
 
 **Built for the Monad Hackathon**
 
-MONSpark is a gamified on-chain platform that solves the "frozen balance" problem for micro-asset holders. Users complete quests and mini-games to earn temporary MON gas credits, enabling them to perform microtransactions without needing to buy gas separately.
+MONSpark is a **fully gamified blockchain platform** that solves the "frozen balance" problem through interactive missions, blockchain puzzles, and educational mini-games. Users earn temporary MON gas credits by completing engaging challenges, enabling microtransactions without buying gas separately.
+
+## 🎮 NEW: Interactive Missions & Mini-Games!
+
+- **12 Interactive Missions** with blockchain puzzles and trivia
+- **4 Types of Mini-Games** (Puzzle, Trivia, Memory, Quiz)
+- **Monad Documentation Study** missions
+- **49 Total Quests** across 8 categories
+- **Gamified Learning** - Learn while playing!
 
 ## 🎯 Problem Statement
 
