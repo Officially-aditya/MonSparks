@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
@@ -58,7 +58,7 @@ contract GasManager is Ownable, ReentrancyGuard {
 
     event EligibilityUpdated(address indexed user, uint256 amount);
 
-    constructor() {
+    constructor() Ownable(msg.sender) {
         poolBalance = 0;
     }
 

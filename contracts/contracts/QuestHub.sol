@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title QuestHub
@@ -61,7 +61,7 @@ contract QuestHub is Ownable, ReentrancyGuard {
 
     event RewardClaimed(address indexed user, uint256 amount);
 
-    constructor() {
+    constructor() Ownable(msg.sender) {
         questCounter = 0;
 
         // Initialize level thresholds (XP needed for each level)
