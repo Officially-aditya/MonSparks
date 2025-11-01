@@ -5,23 +5,49 @@ import {
   CheckCircle,
   Zap,
   Users,
-  GamepadIcon,
   ArrowRight,
+  Filter,
+  Search,
+  TrendingUp,
+  Heart,
+  Dices,
+  Settings,
+  Rocket,
 } from "lucide-react";
 import { useWeb3 } from "../context/Web3Context";
 import { questsApi } from "../lib/api";
 import { Quest } from "../types";
 import { formatNumber } from "../lib/utils";
 
+// Quest categories
+const CATEGORIES = [
+  { id: "all", name: "All Quests", icon: Trophy },
+  { id: "activity", name: "On-Chain Activity", icon: Zap },
+  { id: "progression", name: "Progression & Skill", icon: TrendingUp },
+  { id: "social", name: "Social & Community", icon: Users },
+  { id: "impact", name: "Value & Impact", icon: Heart },
+  { id: "games", name: "Games & Random", icon: Dices },
+  { id: "transaction", name: "Transaction Level", icon: Settings },
+  { id: "ecosystem", name: "Ecosystem", icon: Rocket },
+];
+
 const QuestCenter: React.FC = () => {
   const { account, isConnected } = useWeb3();
   const [quests, setQuests] = useState<Quest[]>([]);
+  const [filteredQuests, setFilteredQuests] = useState<Quest[]>([]);
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showCompleted, setShowCompleted] = useState(true);
 
   useEffect(() => {
     loadQuests();
   }, [account]);
+
+  useEffect(() => {
+    filterQuests();
+  }, [quests, selectedCategory, searchTerm, showCompleted]);
 
   //error
   const loadQuests = async () => {
@@ -34,6 +60,58 @@ const QuestCenter: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getCategoryFromName = (name: string): string => {
+    if (name.includes("Spark") || name.includes("Transaction") || name.includes("Tipper") || name.includes("Donor") || name.includes("Bridge Builder")) {
+      return "activity";
+    }
+    if (name.includes("Consistency") || name.includes("Streak") || name.includes("Daily") || name.includes("Smart") || name.includes("Chain Explorer")) {
+      return "progression";
+    }
+    if (name.includes("Invite") || name.includes("Community") || name.includes("Contributor") || name.includes("Exchange") || name.includes("Creator")) {
+      return "social";
+    }
+    if (name.includes("Change") || name.includes("Supporter") || name.includes("Impact") || name.includes("Edu") || name.includes("Zen")) {
+      return "impact";
+    }
+    if (name.includes("Lucky") || name.includes("Mystery") || name.includes("Game") || name.includes("Combo") || name.includes("Champion")) {
+      return "games";
+    }
+    if (name.includes("Recycler") || name.includes("Efficient") || name.includes("Record") || name.includes("Portfolio") || name.includes("Build Together")) {
+      return "transaction";
+    }
+    if (name.includes("Monad") || name.includes("Connector") || name.includes("Developer") || name.includes("Bridge Booster")) {
+      return "ecosystem";
+    }
+    return "activity";
+  };
+
+  const filterQuests = () => {
+    let filtered = [...quests];
+
+    // Filter by category
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter(
+        (quest) => getCategoryFromName(quest.name) === selectedCategory
+      );
+    }
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (quest) =>
+          quest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          quest.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by completion status
+    if (!showCompleted) {
+      filtered = filtered.filter((quest) => !quest.completed);
+    }
+
+    setFilteredQuests(filtered);
   };
 
   const handleCompleteQuest = async (questId: number) => {
@@ -53,29 +131,47 @@ const QuestCenter: React.FC = () => {
     }
   };
 
-  const getQuestIcon = (requiredAction: number) => {
-    switch (requiredAction) {
-      case 1:
-        return Users;
-      case 2:
+  const getQuestIcon = (questName: string) => {
+    const category = getCategoryFromName(questName);
+    switch (category) {
+      case "activity":
         return Zap;
-      case 3:
-        return GamepadIcon;
+      case "progression":
+        return TrendingUp;
+      case "social":
+        return Users;
+      case "impact":
+        return Heart;
+      case "games":
+        return Dices;
+      case "transaction":
+        return Settings;
+      case "ecosystem":
+        return Rocket;
       default:
         return Trophy;
     }
   };
 
-  const getQuestColor = (requiredAction: number) => {
-    switch (requiredAction) {
-      case 1:
-        return "from-blue-500 to-cyan-500";
-      case 2:
+  const getQuestColor = (questName: string) => {
+    const category = getCategoryFromName(questName);
+    switch (category) {
+      case "activity":
         return "from-purple-500 to-pink-500";
-      case 3:
-        return "from-orange-500 to-red-500";
-      default:
+      case "progression":
+        return "from-blue-500 to-cyan-500";
+      case "social":
         return "from-green-500 to-emerald-500";
+      case "impact":
+        return "from-red-500 to-orange-500";
+      case "games":
+        return "from-yellow-500 to-amber-500";
+      case "transaction":
+        return "from-indigo-500 to-purple-500";
+      case "ecosystem":
+        return "from-cyan-500 to-blue-500";
+      default:
+        return "from-gray-500 to-gray-600";
     }
   };
 
@@ -115,13 +211,66 @@ const QuestCenter: React.FC = () => {
         </p>
       </motion.div>
 
+      {/* Search and Filters */}
+      <div className="space-y-4">
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Search quests..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-400 outline-none focus:border-purple-500 transition-colors"
+          />
+        </div>
+
+        {/* Category Filters */}
+        <div className="flex items-center space-x-2 overflow-x-auto pb-2">
+          {CATEGORIES.map((category) => {
+            const Icon = category.icon;
+            return (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
+                  selectedCategory === category.id
+                    ? "bg-purple-600 text-white"
+                    : "bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="text-sm font-medium">{category.name}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Stats and Toggle */}
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-400">
+            Showing <span className="text-white font-semibold">{filteredQuests.length}</span> of{" "}
+            <span className="text-white font-semibold">{quests.length}</span> quests
+          </div>
+          <button
+            onClick={() => setShowCompleted(!showCompleted)}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm transition-all ${
+              showCompleted
+                ? "bg-gray-800 text-gray-400"
+                : "bg-purple-600 text-white"
+            }`}
+          >
+            <Filter className="w-4 h-4" />
+            <span>{showCompleted ? "Show All" : "Hide Completed"}</span>
+          </button>
+        </div>
+      </div>
+
       {/* Quests Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {quests.map((quest, index) => {
-          const QuestIcon = getQuestIcon(parseInt(quest.completionCount) % 3 + 1);
-          const colorGradient = getQuestColor(
-            parseInt(quest.completionCount) % 3 + 1
-          );
+        {filteredQuests.map((quest, index) => {
+          const QuestIcon = getQuestIcon(quest.name);
+          const colorGradient = getQuestColor(quest.name);
 
           return (
             <motion.div
@@ -215,7 +364,24 @@ const QuestCenter: React.FC = () => {
       </div>
 
       {/* Empty State */}
-      {quests.length === 0 && (
+      {filteredQuests.length === 0 && quests.length > 0 && (
+        <div className="text-center py-16">
+          <Trophy className="w-24 h-24 mx-auto text-gray-600 mb-4" />
+          <p className="text-gray-400 mb-2">No quests match your filters</p>
+          <button
+            onClick={() => {
+              setSelectedCategory("all");
+              setSearchTerm("");
+              setShowCompleted(true);
+            }}
+            className="text-purple-400 hover:text-purple-300 text-sm"
+          >
+            Clear all filters
+          </button>
+        </div>
+      )}
+
+      {quests.length === 0 && !loading && (
         <div className="text-center py-16">
           <Trophy className="w-24 h-24 mx-auto text-gray-600 mb-4" />
           <p className="text-gray-400">No quests available at the moment</p>
