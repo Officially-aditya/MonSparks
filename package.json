@@ -1,0 +1,31 @@
+{
+  "name": "monspark",
+  "version": "1.0.0",
+  "description": "MONSpark - Gamified on-chain platform for micro-asset holders",
+  "scripts": {
+    "install:all": "npm install && cd contracts && npm install && cd ../backend && npm install && cd ../frontend && npm install",
+    "node": "cd contracts && npx hardhat node",
+    "deploy": "cd contracts && npx hardhat run scripts/deploy.ts --network localhost",
+    "deploy:testnet": "cd contracts && npx hardhat run scripts/deploy.ts --network monadTestnet",
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "build:contracts": "cd contracts && npx hardhat compile",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:all": "npm run build:contracts && npm run build:backend && npm run build:frontend"
+  },
+  "keywords": [
+    "monad",
+    "blockchain",
+    "web3",
+    "defi",
+    "gas-optimization",
+    "hackathon"
+  ],
+  "author": "MONSpark Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
